@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AIエンジニアを目指す自己紹介ページです。学習中の言語や将来の目標について紹介しています。">
+  <title>Document</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="assets/SeekPilot.png" type="image/png">
+  <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
+  <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+  <div id="search-area">
+    <input type="text" id="tag-input" placeholder="タグ名を入力（例: aside）">
+    <button id="search-btn" py-click="handle_search">検索</button>
+</div>
+
+<div id="search-result" style="margin-top: 10px; font-weight: bold; color: #2c3e50;">
+    ここに結果が表示されます
+</div>
+</head>
+<body>
+<main>
+  <section id="tag-reference">
+    <h1>HTML5 Tag Reference</h1>
+    <p>学習したHTMLタグの用途と使い方を整理したリストです。</p>
+    <p>情報は適宜更新していきます。</p>
+
+    <p>pyscriptを活用して、学習したタグを検索して出力できるようにしました</p>
+    <p><script type="py" src="main.py" config="pyscript.json"></script></p>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>タグ名</th>
+          <th>意味・用途</th>
+          <th>推奨設置場所</th>
+          <th>備考</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>&lt;aside&gt;</code></td>
+          <td>補足情報・広告</td>
+          <td>記事内またはサイドバー</td>
+          <td>親要素によって範囲が変わる</td>
+        </tr>
+        <tr>
+          <td><code>&lt;nav&gt;</code></td>
+          <td>主要なメニュー</td>
+          <td>ヘッダーやフッター</td>
+          <td>リスト形式で配置するのが一般的</td>
+        </tr>
+        <tr>
+          <td><code>&lt;main&gt;</code></td>
+          <td>そのページの「主要なコンテンツ」を示す。ロゴや共通メニュー、コピーライト以外の「そのページ独自の主役」を囲む</td>
+          <td>&lt;body&gt;タグの直下、もしくは &lt;header&gt; と &lt;footer&gt; の間。</td>
+          <td>原則として1つのページに1つだけ。検索エンジンや読み上げソフトに「ここが本題だよ」と伝える重要な役割</td>
+        </tr>
+        <tr>
+          <td><code>&lt;section&gt;</code></td>
+          <td>共通のテーマを持つ「コンテンツのまとまり」を示す。章、節、項などの区切りとして使う</td>
+          <td>&lt;main&gt; や &lt;article&gt; の中で、内容の区切りが必要な場所</td>
+          <td>原則として、中に「見出し（&lt;h1&gt;〜&lt;h6&gt;）」を含めるのがお作法。単なる見た目のための囲みなら <div> を使う</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</main>
