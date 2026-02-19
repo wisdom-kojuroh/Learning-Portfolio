@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AIエンジニアを目指す自己紹介ページです。学習中の言語や将来の目標について紹介しています。">
+  <title>Document</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="assets/SeekPilot.png" type="image/png">
+  <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
+  <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+
+</head>
+<body>
+<main>
+  <section id="tag-reference">
+    <h1>HTML5 Tag Reference</h1>
+    <p>学習したHTMLタグの用途と使い方を整理したリストです。</p>
+    <p>情報は適宜更新していきます。</p>
+
+    <p>pyscriptを活用して、学習したタグを検索して出力できるようにしました</p>
+    <div id="search-area" style="margin-bottom: 20px; padding: 15px; background-color: #f9f9f9; border-radius: 8px;">
+        <input type="text" id="tag-input" placeholder="タグ名を入力（例: aside）">
+        <button id="search-btn" py-click="handle_search">検索</button>
+        <div id="search-result" style="margin-top: 10px; font-weight: bold; color: #d35400;">
+    ここに結果が表示されます
+        </div>
+    </div>
+    <footer>
+      <time datetime="2026-01-20">最終更新日: 2026年1月20日</time> 
+    </footer>
+
+    <script type="py" src="main.py" config="pyscript.json"></script>
+
+
+    <table border="1">
+      
+      <thead>
+        <tr>
+          <th>タグ名</th>
+          <th>意味・用途</th>
+          <th>推奨設置場所</th>
+          <th>備考</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>&lt;a&gt;</code></td>
+          <td>アンカー（Anchor）</td>
+          <td>他のページやサイトへのリンク、ページ内移動</td>
+          <td>href属性で移動先を指定する。リンク先の「中身」がわかるようなテキストを囲むのがSEOの鉄則。「ここをクリック」だけじゃなく、具体的なキーワードを含めるのが現代流だよ</td>
+        </tr>
+        <tr>
+          <td><code>&lt;article&gt;</code></td>
+          <td>その部分だけを切り取って他のサイトに転載しても、内容が十分理解できる独立性の高いセクション</td>
+          <td>メインコンテンツエリア（&lt;main&gt;の中）に置くのが一般的。ブログの一覧ページなら各記事の要約を、個別ページなら記事本文を囲むように配置</td>
+          <td>&lt;section&gt;との違いは「独立性」。&lt;article&gt;の中に、さらに章立てとして&lt;section&gt;を入れる構造は非常に一般的</td>
+        </tr>
+        <tr>
+          <td><code>&lt;aside&gt;</code></td>
+          <td>補足情報・広告</td>
+          <td>記事内またはサイドバー</td>
+          <td>親要素によって範囲が変わる</td>
+        </tr>
+        <tr>
+          <td><code>&lt;br&gt;</code></td>
+          <td>改行（Break）</td>
+          <td>住所、詩、歌詞など、『改行』自体に意味がある場所</td>
+          <td>「行間を空けたい」という見た目目的で多用するのはNG。あくまで文中の改行として使う。なお、閉じタグは不要</td>
+        </tr>
+        <tr>
+          <td><code>&lt;code&gt;</code></td>
+          <td>プログラムのコード</td>
+          <td>文中の関数名、変数名、タグ名など</td>
+          <td>デフォルトでは等幅フォント（Monospace）で表示される。長いコードを書くときは<pre>タグと組み合わせて使うのが一般的。</td>
+        </tr>
+        <tr>
+          <td><code>&lt;div&gt;</code></td>
+          <td>区分（Division）</td>
+          <td>複数の要素をひとまとめにして、レイアウトを整える場所</td>
+          <td>これ自体に意味はないが、CSSで「横並びにしたい」「枠線で囲みたい」という時に、要素をグループ化するために使う。前後で必ず改行される「ブロックレベル要素」</td>
+        </tr>
+        <tr>
+          <td><code>&lt;footer&gt;</code></td>
+          <td>直近のセクションの連絡先や著作権情報、関連リンク</td>
+          <td>ページの一番下、または&lt;article&gt;や&lt;section&gt;の最後</td>
+          <td>サイトの著者情報、コピーライト、利用規約へのリンクなどを配置する。&lt;article&gt;や&lt;section&gt; や  ごとに付けても良い</td>
+        </tr>
+        <tr>
+          <td><code>&lt;form&gt;</code></td>
+          <td>入力フォームの範囲</td>
+          <td>ユーザーの入力を受け付けるエリアの定義</td>
+          <td>action属性（送信先）やmethod属性（送信方法）を指定するが、PyScriptで処理するなら基本の枠組みとして使用する</td>
+        </tr>
+        <tr>
+          <td><code>&lt;h1&gt;〜&lt;h6&gt;</code></td>
+          <td>見出し（Heading）</td>
+          <td>各セクションの冒頭</td>
+          <td>h1が一番重要で、h6に向かって細かくなっていく。見た目の大きさではなく「情報の階層」を示す。h1は1ページに1つだけにするのが現代の鉄則</td>
+        </tr>
+        <tr>
+          <td><code>&lt;header&gt;</code></td>
+          <td>導入的なコンテンツやナビゲーションのグループ</td>
+          <td>ページの一番上、または&lt;article&gt;や&lt;section&gt;の冒頭</td>
+          <td>ロゴ、検索フォーム、ナビゲーション（&lt;nav&gt;）などを含む。1つのページに複数存在してもOK。&lt;article&gt;や&lt;section&gt; ごとに付けても良い</td>
+        </tr>
+        <tr>
+          <td><code>&lt;input&gt;</code></td>
+          <td>1行の入力フィールド</td>
+          <td>名前、キーワード、パスワードなどの短い入力</td>
+          <td>type属性を変えるだけでテキスト(text)、送信ボタン(submit)、チェックボックスなど多様な役割に変化する万能タグ</td>
+        </tr>
+        <tr>
+          <td><code>&lt;nav&gt;</code></td>
+          <td>主要なメニュー</td>
+          <td>ヘッダーやフッター</td>
+          <td>リスト形式で配置するのが一般的</td>
+        </tr>
+        <tr>
+          <td><code>&lt;main&gt;</code></td>
+          <td>そのページの「主要なコンテンツ」を示す。ロゴや共通メニュー、コピーライト以外の「そのページ独自の主役」を囲む</td>
+          <td>&lt;body&gt;タグの直下、もしくは &lt;header&gt; と &lt;footer&gt; の間。</td>
+          <td>原則として1つのページに1つだけ。検索エンジンや読み上げソフトに「ここが本題だよ」と伝える重要な役割</td>
+        </tr>
+        <tr>
+          <td><code>&lt;p&gt;</code></td>
+          <td>段落（Paragraph）</td>
+          <td>文章のひとまとまり</td>
+          <td>もっとも頻繁に使うタグの一つ。前後に自動で余白ができる性質があるけど、余白の広さはCSSで調整するのが基本。&lt;br&gt;タグと似ているが&lt;br&gt;タグは単なる改行であり、文の段落を示すものではない</td>
+        </tr>
+        <tr>
+          <td><code>&lt;pre&gt;</code></td>
+          <td>整形済みテキスト（Preformatted Text）</td>
+          <td>複数行のプログラムコードを表示する場所</td>
+          <td>改行やスペースを、ソースコードに書いた通りにそのまま表示する。通常は <code> と組み合わせて <code>&lt;pre&gt;&lt;code&gt;〜&lt;/code&gt;&lt;/pre&gt;</code> の形で使う</td>
+        </tr>
+
+        <tr>
+          <td><code>&lt;section&gt;</code></td>
+          <td>共通のテーマを持つ「コンテンツのまとまり」を示す。章、節、項などの区切りとして使う</td>
+          <td>&lt;main&gt; や &lt;article&gt; の中で、内容の区切りが必要な場所</td>
+          <td>原則として、中に「見出し（&lt;h1&gt;〜&lt;h6&gt;）」を含めるのがお作法。単なる見た目のための囲みなら <div> を使う</td>
+        </tr>
+        <tr>
+          <td><code>&lt;span&gt;</code></td>
+          <td>範囲（意味を持たないインライン要素）</td>
+          <td>文章中の一部の色を変えたり、特定の文字を装飾したりする場所</td>
+          <td>これ自体には意味がない。主にCSSを適用するための「目印」として、文章の一部を囲むのに使う。前後で改行されないのが特徴</td>
+        </tr>
+        <tr>
+          <td><code>&lt;textarea&gt;</code></td>
+          <td>複数行の入力エリア</td>
+          <td>長い文章、データの羅列、AIへのプロンプトなど</td>
+          <td>inputと違い閉じタグが必要。rows属性で高さ、cols属性で幅を調整できる。改行を含めたデータ保持に向いている</td>
+        </tr>
+        <tr>
+          <td><code>&lt;time&gt;</code></td>
+          <td>日付、時刻、または期間</td>
+          <td>記事の公開日、イベントの日時、文中の日付など</td>
+          <td>datetime属性を使って「2026-01-20」のように機械が読み取りやすい形式で記述するのがルール</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="reference-box" style="margin-top: 40px; border: 2px solid #333; padding: 20px; border-radius: 8px;">
+  <h2>おすすめの学習リソース</h2>
+  
+  <article>
+    <h3>
+      <a href="https://developer.mozilla.org/ja/" target="_blank">
+        MDN Web Docs (Mozilla Developer Network)
+      </a>
+    </h3>
+    <p>
+      現代のWebエンジニアにとっての<strong>「聖書」</strong>。最新のHTML5の仕様から、
+      CSS、JavaScriptまで、デモを動かしながら学べる最強のドキュメントサイト。
+    </p>
+    <p>
+      <span>「現代の標準」</span>を身につけるなら
+      ここは絶対に外せません。
+    </p>
+    <p>
+      自分が表のとおりに記述していますが、それはあくまで簡易的にまとめたものです。
+      エンジニアであるならば、情報ソースの信頼性を重視して、MDNも利用するよう心がけましょう
+    </p>
+  </article>
+</div>
+  </section>
+</main>
