@@ -1,51 +1,34 @@
-// js/io.js - データのエクスポート・インポート処理
+// js/io.js のエクスポート部分の改修案
+exportBtn.addEventListener('click', async () => {
+    const data = localStorage.getItem('flashcards') || '[]';
+    const blob = new Blob([data], { type: 'application/json' });
+    const file = new File([blob], 'flashcards_backup.json', { type: 'application/json' });
 
-document.addEventListener('DOMContentLoaded', () => {
-    const exportBtn = document.getElementById('export-btn');
-    const importFile = document.getElementById('import-file');
-
-    // JSONエクスポート処理
-    if (exportBtn) {
-        exportBtn.addEventListener('click', () => {
-            // ストレージから全データを取得（アプリの仕様に合わせてキー名を調整してね）
-            const data = localStorage.getItem('flashcards') || '[]';
-            const blob = new Blob([data], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'flashcards_backup.json';
-            document.body.appendChild(a);
-            a.click();
-            
-            // クリーンアップ
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        });
+    // iOSのスタンドアロンでも動きやすいWeb Share APIを優先的に試す
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+            await navigator.share({
+                files: [file],
+                title: 'Flashcard Backup',
+                text: 'フラッシュカードのバックアップデータです'
+            });
+            return;
+        } catch (err) {
+            if (err.name !== 'AbortError') {
+                console.log('Share failed, fallback to download link', err);
+            } else {
+                return; // ユーザーがキャンセルした場合は何もしない
+            }
+        }
     }
 
-    // JSONインポート処理
-    if (importFile) {
-        importFile.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const content = e.target.result;
-                    // JSONとしてパースできるかざっくりチェック
-                    JSON.parse(content);
-                    
-                    // localStorageに保存
-                    localStorage.setItem('flashcards', content);
-                    alert('データのインポートが完了しました！ページを再読み込みします。');
-                    location.reload();
-                } catch (err) {
-                    alert('無効なJSONファイルです。正しいファイルを指定してください。');
-                }
-            };
-            reader.readAsText(file);
-        });
-    }
+    // フォールバック：通常ブラウザ向け
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'flashcards_backup.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 });
