@@ -151,14 +151,23 @@ addBtn.addEventListener("click", () => {
   showCard();
 });
 
+// js/app.js の exportBtn の部分をこれに差し替えてね
 exportBtn.addEventListener("click", () => {
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(flashcards, null, 2));
-  const dlAnchorElem = document.createElement('a');
-  dlAnchorElem.setAttribute("href", dataStr);
-  dlAnchorElem.setAttribute("download", "flashcards_backup.json");
-  document.body.appendChild(dlAnchorElem); // ←ここを追加！
-  dlAnchorElem.click();
-  dlAnchorElem.remove();
+  try {
+    const dataStr = JSON.stringify(flashcards, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const dlAnchorElem = document.createElement('a');
+    dlAnchorElem.setAttribute("href", url);
+    dlAnchorElem.setAttribute("download", "flashcards_backup.json");
+    
+    document.body.appendChild(dlAnchorElem);
+    dlAnchorElem.click();
+    document.body.removeChild(dlAnchorElem);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    alert("エクスポートエラー: " + err.message);
+  }
 });
 
 importFile.addEventListener("change", (e) => {
