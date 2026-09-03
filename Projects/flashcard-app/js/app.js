@@ -156,6 +156,7 @@ exportBtn.addEventListener("click", () => {
   const dlAnchorElem = document.createElement('a');
   dlAnchorElem.setAttribute("href", dataStr);
   dlAnchorElem.setAttribute("download", "flashcards_backup.json");
+  document.body.appendChild(dlAnchorElem); // ←ここを追加！
   dlAnchorElem.click();
   dlAnchorElem.remove();
 });
