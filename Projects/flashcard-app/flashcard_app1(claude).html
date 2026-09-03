@@ -1,0 +1,386 @@
+<div id="flashcard-container" style="border:2px solid #ccc;padding:20px;border-radius:8px;max-width:400px;margin:20px auto;font-family:sans-serif;"><div style="margin-bottom:12px;text-align:left;"><div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;flex-wrap:wrap;"><button id="review-mode-btn" style="padding:4px 6px;font-size:11px;cursor:pointer;background:#d9534f;color:white;border:none;border-radius:4px;white-space:nowrap;flex-shrink:0;">今日の復習</button><button id="all-mode-btn" style="padding:4px 6px;font-size:11px;cursor:pointer;background:#0073aa;color:white;border:none;border-radius:4px;white-space:nowrap;flex-shrink:0;">全カード</button><button id="shuffle-mode-btn" style="padding:4px 6px;font-size:11px;cursor:pointer;background:#f0ad4e;color:white;border:none;border-radius:4px;white-space:nowrap;flex-shrink:0;">🔀シャッフル</button><button id="mastered-mode-btn" style="padding:4px 6px;font-size:11px;cursor:pointer;background:#5cb85c;color:white;border:none;border-radius:4px;white-space:nowrap;flex-shrink:0;">習得済み</button><div id="tag-filter-container" style="display:flex;overflow-x:auto;gap:4px;padding-bottom:4px;white-space:nowrap;-webkit-overflow-scrolling:touch;width:100%;margin-top:4px;"></div></div></div><div style="text-align:center;"><div id="card-tag" style="font-size:12px;color:#0073aa;font-weight:bold;margin-bottom:8px;background:#eef5fa;display:inline-block;padding:2px 8px;border-radius:10px;">🏷️ タグ</div><div id="card-question" style="font-size:24px;font-weight:bold;margin-bottom:15px;">読み込み中...</div><div id="card-answer" style="font-size:18px;color:#666;margin-bottom:10px;display:none;">ここに日本語訳が出るよ</div><div id="card-note" style="font-size:13px;color:#888;background:#f9f9f9;padding:6px;border-radius:4px;margin-bottom:15px;display:none;text-align:left;"></div><div id="edit-form-container" style="display:none;margin-bottom:15px;text-align:left;background:#f9f9f9;padding:10px;border-radius:6px;"><input type="text" id="edit-q" placeholder="英語の問題" style="width:100%;padding:6px;margin-bottom:6px;box-sizing:border-box;"><input type="text" id="edit-a" placeholder="日本語の答え" style="width:100%;padding:6px;margin-bottom:6px;box-sizing:border-box;"><input type="text" id="edit-t" placeholder="タグ" style="width:100%;padding:6px;margin-bottom:6px;box-sizing:border-box;"><input type="text" id="edit-note" placeholder="備考・解説" style="width:100%;padding:6px;margin-bottom:6px;box-sizing:border-box;"><div style="display:flex;gap:6px;"><button id="save-edit-btn" style="flex:1;padding:6px;cursor:pointer;background:#4CAF50;color:white;border:none;border-radius:4px;">保存</button><button id="cancel-edit-btn" style="flex:1;padding:6px;cursor:pointer;background:#aaa;color:white;border:none;border-radius:4px;">キャンセル</button></div></div><div id="review-buttons" style="display:none;margin-bottom:15px;flex-wrap:wrap;justify-content:center;gap:4px;"><button class="rev-btn" data-days="1" style="padding:6px 10px;cursor:pointer;background:#ffcccc;border:none;border-radius:4px;">1日後</button><button class="rev-btn" data-days="3" style="padding:6px 10px;cursor:pointer;background:#ffe5cc;border:none;border-radius:4px;">3日後</button><button class="rev-btn" data-days="7" style="padding:6px 10px;cursor:pointer;background:#e5ffcc;border:none;border-radius:4px;">1週間後</button><button class="rev-btn" data-days="30" style="padding:6px 10px;cursor:pointer;background:#ccf2ff;border:none;border-radius:4px;">1ヶ月後</button><button id="master-btn" style="padding:6px 10px;cursor:pointer;background:#4CAF50;color:white;border:none;border-radius:4px;font-weight:bold;">✨ 習得完了</button></div><div id="mastered-action-container" style="display:none;margin-bottom:15px;"><button id="unmaster-btn" style="padding:6px 12px;cursor:pointer;background:#f0ad4e;color:white;border:none;border-radius:4px;font-weight:bold;">🔄 もう一度学ぶ（未習得に戻す）</button></div><div id="card-action-bar" style="margin-bottom:12px;display:flex;justify-content:center;gap:6px;flex-wrap:wrap;"><button id="toggle-btn" style="padding:8px 14px;cursor:pointer;">答えを見る</button><button id="speak-btn" style="padding:8px 10px;cursor:pointer;background:#337ab7;color:white;border:none;border-radius:4px;font-size:12px;">🔊 聴く</button><button id="edit-btn" style="padding:8px 10px;cursor:pointer;background:#f0ad4e;color:white;border:none;border-radius:4px;font-size:12px;">編集</button><button id="delete-btn" style="padding:8px 10px;cursor:pointer;background:#d9534f;color:white;border:none;border-radius:4px;font-size:12px;">削除</button></div><button id="next-btn" style="padding:8px 16px;cursor:pointer;display:none;width:100%;">次のカードへ</button><div id="card-counter" style="font-size:11px;color:#888;text-align:right;margin-top:12px;">- / -</div></div><hr style="margin:20px 0;border:none;border-top:1px solid #eee;"><div style="text-align:left;"><h3 style="font-size:14px;margin:0 0 8px 0;">新しいカードを追加</h3><input type="text" id="new-q" placeholder="英語の問題" style="width:100%;padding:6px;margin-bottom:8px;box-sizing:border-box;"><input type="text" id="new-a" placeholder="日本語の答え" style="width:100%;padding:6px;margin-bottom:8px;box-sizing:border-box;"><input type="text" id="new-t" placeholder="タグ（例: 朝の会話, 日常会話）" style="width:100%;padding:6px;margin-bottom:8px;box-sizing:border-box;"><input type="text" id="new-note" placeholder="備考・解説（任意）" style="width:100%;padding:6px;margin-bottom:8px;box-sizing:border-box;"><button id="add-btn" style="padding:6px 12px;cursor:pointer;background:#4CAF50;color:white;border:none;border-radius:4px;width:100%;">カードを追加する</button></div><hr style="margin:20px 0;border:none;border-top:1px solid #eee;"><div style="text-align:left;"><h3 style="font-size:14px;margin:0 0 8px 0;">データ管理（バックアップ・インポート）</h3><div style="display:flex;gap:6px;flex-wrap:wrap;"><button id="export-btn" style="flex:1;min-width:110px;padding:6px;cursor:pointer;background:#6c757d;color:white;border:none;border-radius:4px;font-size:11px;">📤 JSONエクスポート</button><label style="flex:1;min-width:110px;padding:6px;cursor:pointer;background:#6c757d;color:white;border:none;border-radius:4px;font-size:11px;text-align:center;display:block;">📥 JSONインポート<input type="file" id="import-file" accept=".json" style="display:none;"></label><label style="flex:1;min-width:110px;padding:6px;cursor:pointer;background:#f0ad4e;color:white;border:none;border-radius:4px;font-size:11px;text-align:center;display:block;">📂 CSVインポート<input type="file" id="import-csv-file" accept=".csv" style="display:none;"></label></div><div id="save-status" style="font-size:10px;color:#999;margin-top:6px;"></div></div></div>
+<script>
+const STORAGE_KEY = "my_flashcards_data";
+let flashcards = [];
+let activeCards = [];
+let currentIndex = 0;
+let currentMode = "review";
+const saveStatusEl = document.getElementById("save-status");
+
+function defaultCards(){
+  return [
+    {id:1,question:"Are there any others?",answer:"他に無いよな",tag:"日常会話",note:"相手に確認するときの定番フレーズ",stage:0,nextReview:null,isMastered:false},
+    {id:2,question:"That's all, right?",answer:"これで全部だよね（他にないよね）",tag:"日常会話",note:"直訳は「それが全てだね」",stage:0,nextReview:null,isMastered:false},
+    {id:3,question:"Any other options?",answer:"他に選択肢はないよな？",tag:"ビジネス",note:"ビジネスの交渉や提案の場面で使える",stage:0,nextReview:null,isMastered:false},
+    {id:4,question:"Good morning!",answer:"おはよう！",tag:"朝の会話",note:"基本的な挨拶",stage:0,nextReview:null,isMastered:false}
+  ];
+}
+
+// --- 永続化: localStorageの代わりにwindow.storageを使う ---
+async function loadFlashcards(){
+  try{
+    const result = await window.storage.get(STORAGE_KEY, false);
+    if(result && result.value){
+      const parsed = JSON.parse(result.value);
+      if(Array.isArray(parsed) && parsed.length > 0){
+        flashcards = parsed;
+        return;
+      }
+    }
+  }catch(e){
+    // キーがまだ存在しない場合はここに来る(初回起動)
+  }
+  flashcards = defaultCards();
+  await saveFlashcards();
+}
+
+async function saveFlashcards(){
+  try{
+    const result = await window.storage.set(STORAGE_KEY, JSON.stringify(flashcards), false);
+    if(!result){
+      showSaveStatus("⚠️ 保存に失敗しました", true);
+      return false;
+    }
+    showSaveStatus("✅ 保存しました", false);
+    return true;
+  }catch(e){
+    console.error("Storage error:", e);
+    showSaveStatus("⚠️ 保存に失敗しました", true);
+    return false;
+  }
+}
+
+let saveStatusTimer = null;
+function showSaveStatus(text, isError){
+  saveStatusEl.textContent = text;
+  saveStatusEl.style.color = isError ? "#d9534f" : "#999";
+  if(saveStatusTimer) clearTimeout(saveStatusTimer);
+  saveStatusTimer = setTimeout(()=>{ saveStatusEl.textContent=""; }, 2500);
+}
+
+function shuffleArray(array){
+  const arr=[...array];
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function parseCSV(text){
+  const lines=text.split(/\r\n|\n/);
+  const result=[];
+  if(lines.length===0)return result;
+  const headers=lines[0].split(',').map(h=>h.trim().replace(/^["']|["']$/g,''));
+  for(let i=1;i<lines.length;i++){
+    const line=lines[i].trim();
+    if(!line)continue;
+    const row=[];
+    let inQuotes=false;
+    let currentField="";
+    for(let j=0;j<line.length;j++){
+      const char=line[j];
+      if(char==='"'){
+        if(inQuotes&&line[j+1]==='"'){currentField+='"';j++;}
+        else{inQuotes=!inQuotes;}
+      }else if(char===','&&!inQuotes){row.push(currentField);currentField="";}
+      else{currentField+=char;}
+    }
+    row.push(currentField);
+    const obj={};
+    headers.forEach((h,idx)=>{obj[h]=(row[idx]!==undefined)?row[idx].trim().replace(/^["']|["']$/g,''):"";});
+    if(obj.question&&obj.answer){
+      result.push({id:Date.now()+i,question:obj.question,answer:obj.answer,tag:obj.tag||"一般",note:obj.note||"",stage:0,nextReview:null,isMastered:false});
+    }
+  }
+  return result;
+}
+
+// --- データ構造の検証・正規化 ---
+// 外部(JSON/CSV)から入ってくるデータは形が保証されていないので、
+// アプリが期待する形(question/answer必須、その他は欠けていたら補完)に揃える。
+function normalizeCard(raw, fallbackSeed){
+  if(typeof raw !== "object" || raw === null || Array.isArray(raw)) return null;
+
+  const question = typeof raw.question === "string" ? raw.question.trim() : "";
+  const answer = typeof raw.answer === "string" ? raw.answer.trim() : "";
+  if(!question || !answer) return null; // 必須項目が無いカードは不正データとして除外
+
+  const nextReviewValid = typeof raw.nextReview === "string" && !isNaN(Date.parse(raw.nextReview));
+
+  return {
+    id: (typeof raw.id === "number" || typeof raw.id === "string") ? raw.id : (Date.now() + fallbackSeed),
+    question: question,
+    answer: answer,
+    tag: (typeof raw.tag === "string" && raw.tag.trim()) ? raw.tag.trim() : "未分類",
+    note: typeof raw.note === "string" ? raw.note : "",
+    stage: (typeof raw.stage === "number" && Number.isFinite(raw.stage)) ? raw.stage : 0,
+    nextReview: nextReviewValid ? raw.nextReview : null,
+    isMastered: typeof raw.isMastered === "boolean" ? raw.isMastered : false
+  };
+}
+
+// idの重複を解消しつつ、rawカードの配列を正規化する。existingIdsに既存のidを渡すと、
+// それとの衝突も避けられる(CSVを既存データに追加するケース用)。
+function normalizeCardList(rawList, existingIds){
+  const seenIds = new Set(existingIds || []);
+  const normalized = [];
+  let skipped = 0;
+  rawList.forEach((raw, idx)=>{
+    const card = normalizeCard(raw, idx);
+    if(!card){ skipped++; return; }
+    let uniqueId = card.id;
+    while(seenIds.has(uniqueId)){
+      uniqueId = `${card.id}_${idx}_${Date.now()}`;
+    }
+    seenIds.add(uniqueId);
+    card.id = uniqueId;
+    normalized.push(card);
+  });
+  return { normalized, skipped };
+}
+
+const qEl=document.getElementById("card-question"),aEl=document.getElementById("card-answer"),noteEl=document.getElementById("card-note"),tagEl=document.getElementById("card-tag"),counterEl=document.getElementById("card-counter"),tBtn=document.getElementById("toggle-btn"),speakBtn=document.getElementById("speak-btn"),editBtn=document.getElementById("edit-btn"),deleteBtn=document.getElementById("delete-btn"),nBtn=document.getElementById("next-btn"),rBtns=document.getElementById("review-buttons"),masteredActionContainer=document.getElementById("mastered-action-container"),masterBtn=document.getElementById("master-btn"),unmasterBtn=document.getElementById("unmaster-btn"),editFormContainer=document.getElementById("edit-form-container"),editQInput=document.getElementById("edit-q"),editAInput=document.getElementById("edit-a"),editTInput=document.getElementById("edit-t"),editNoteInput=document.getElementById("edit-note"),saveEditBtn=document.getElementById("save-edit-btn"),cancelEditBtn=document.getElementById("cancel-edit-btn"),tagFilterContainer=document.getElementById("tag-filter-container"),reviewModeBtn=document.getElementById("review-mode-btn"),allModeBtn=document.getElementById("all-mode-btn"),shuffleModeBtn=document.getElementById("shuffle-mode-btn"),masteredModeBtn=document.getElementById("mastered-mode-btn"),newQInput=document.getElementById("new-q"),newAInput=document.getElementById("new-a"),newTInput=document.getElementById("new-t"),newNoteInput=document.getElementById("new-note"),addBtn=document.getElementById("add-btn"),exportBtn=document.getElementById("export-btn"),importFile=document.getElementById("import-file"),importCsvFile=document.getElementById("import-csv-file");
+
+function getValidCards(){return flashcards.filter(c=>!c.isMastered);}
+function getMasteredCards(){return flashcards.filter(c=>c.isMastered);}
+function getReviewCards(){
+  const now=new Date();
+  return getValidCards().filter(c=>{
+    if(!c.nextReview)return true;
+    return new Date(c.nextReview)<=now;
+  });
+}
+
+function renderTagButtons(){
+  tagFilterContainer.innerHTML="";
+  const tags=[...new Set(getValidCards().map(c=>c.tag||"未分類"))];
+  tags.forEach(tag=>{
+    const btn=document.createElement("button");
+    btn.textContent=tag;
+    btn.style.cssText="padding:4px 6px;font-size:10px;cursor:pointer;background:#f1f1f1;border:1px solid #ccc;border-radius:3px;white-space:nowrap;flex-shrink:0;";
+    btn.addEventListener("click",()=>{
+      currentMode="tag";
+      activeCards=getValidCards().filter(c=>(c.tag||"未分類")===tag);
+      currentIndex=0;
+      showCard();
+    });
+    tagFilterContainer.appendChild(btn);
+  });
+}
+
+function reloadActiveCards(){
+  if(currentMode==="review"){activeCards=getReviewCards();}
+  else if(currentMode==="all"){activeCards=getValidCards();}
+  else if(currentMode==="shuffle"){activeCards=shuffleArray(getValidCards());}
+  else if(currentMode==="mastered"){activeCards=getMasteredCards();}
+}
+
+function showCard(){
+  editFormContainer.style.display="none";
+  if(activeCards.length===0){
+    qEl.textContent=currentMode==="mastered"?"習得済みのカードはありません":"該当するカードはありません！";
+    aEl.textContent="";noteEl.style.display="none";tagEl.style.display="none";
+    counterEl.textContent="0 / 0";
+    tBtn.style.display="none";speakBtn.style.display="none";editBtn.style.display="none";deleteBtn.style.display="none";
+    rBtns.style.display="none";masteredActionContainer.style.display="none";nBtn.style.display="none";
+    return;
+  }
+  if(currentIndex>=activeCards.length){
+    qEl.textContent="🎉 ここまでです！お疲れ様！";
+    aEl.textContent="";noteEl.style.display="none";tagEl.style.display="none";
+    counterEl.textContent=`${activeCards.length} / ${activeCards.length}`;
+    tBtn.style.display="none";speakBtn.style.display="none";editBtn.style.display="none";deleteBtn.style.display="none";
+    rBtns.style.display="none";masteredActionContainer.style.display="none";nBtn.style.display="none";
+    return;
+  }
+  tagEl.style.display="inline-block";
+  const c=activeCards[currentIndex];
+  qEl.textContent=c.question;
+  aEl.textContent=c.answer;
+  if(c.note){noteEl.textContent=`📝 備考: ${c.note}`;noteEl.style.display="block";}
+  else{noteEl.style.display="none";}
+  tagEl.textContent=`🏷️ ${c.tag||"未分類"}`;
+  counterEl.textContent=`${currentIndex + 1} / ${activeCards.length}`;
+  aEl.style.display="none";
+  tBtn.style.display="inline-block";tBtn.textContent="答えを見る";
+  speakBtn.style.display="inline-block";editBtn.style.display="inline-block";deleteBtn.style.display="inline-block";
+  rBtns.style.display="none";masteredActionContainer.style.display="none";nBtn.style.display="none";
+}
+
+reviewModeBtn.addEventListener("click",()=>{currentMode="review";activeCards=getReviewCards();currentIndex=0;showCard();});
+allModeBtn.addEventListener("click",()=>{currentMode="all";activeCards=getValidCards();currentIndex=0;showCard();});
+shuffleModeBtn.addEventListener("click",()=>{currentMode="shuffle";activeCards=shuffleArray(getValidCards());currentIndex=0;showCard();});
+masteredModeBtn.addEventListener("click",()=>{currentMode="mastered";activeCards=getMasteredCards();currentIndex=0;showCard();});
+
+tBtn.addEventListener("click",()=>{
+  if(aEl.style.display==="none"){
+    aEl.style.display="block";tBtn.style.display="none";
+    if(currentMode==="mastered"){masteredActionContainer.style.display="flex";}
+    else{rBtns.style.display="flex";}
+  }
+});
+
+speakBtn.addEventListener("click",()=>{
+  const c=activeCards[currentIndex];
+  if('speechSynthesis' in window){
+    const utterance=new SpeechSynthesisUtterance(c.question);
+    utterance.lang='en-US';
+    window.speechSynthesis.speak(utterance);
+  }else{alert("お使いのブラウザは音声読み上げに対応していないみたい。");}
+});
+
+editBtn.addEventListener("click",()=>{
+  const c=activeCards[currentIndex];
+  editQInput.value=c.question;editAInput.value=c.answer;editTInput.value=c.tag||"";editNoteInput.value=c.note||"";
+  editFormContainer.style.display="block";
+});
+
+cancelEditBtn.addEventListener("click",()=>{editFormContainer.style.display="none";});
+
+saveEditBtn.addEventListener("click", async ()=>{
+  const c=activeCards[currentIndex];
+  const qText=editQInput.value.trim();
+  const aText=editAInput.value.trim();
+  const tText=editTInput.value.trim()||"一般";
+  const nText=editNoteInput.value.trim();
+  if(!qText||!aText){alert("英語と日本語の両方を入力してくれ！");return;}
+  c.question=qText;c.answer=aText;c.tag=tText;c.note=nText;
+  await saveFlashcards();
+  editFormContainer.style.display="none";
+  renderTagButtons();showCard();
+});
+
+deleteBtn.addEventListener("click", async ()=>{
+  if(confirm("このカードを本当に削除してもいいかい？")){
+    const c=activeCards[currentIndex];
+    flashcards=flashcards.filter(item=>item.id!==c.id);
+    await saveFlashcards();
+    reloadActiveCards();renderTagButtons();showCard();
+  }
+});
+
+document.querySelectorAll(".rev-btn").forEach(btn=>{
+  btn.addEventListener("click", async (e)=>{
+    const days=parseInt(e.target.getAttribute("data-days"));
+    const nextDate=new Date();
+    nextDate.setDate(nextDate.getDate()+days);
+    const currentCard=activeCards[currentIndex];
+    currentCard.stage+=1;
+    currentCard.nextReview=nextDate.toISOString();
+    await saveFlashcards();
+    rBtns.style.display="none";nBtn.style.display="block";
+  });
+});
+
+masterBtn.addEventListener("click", async ()=>{
+  const currentCard=activeCards[currentIndex];
+  currentCard.isMastered=true;
+  await saveFlashcards();
+  rBtns.style.display="none";nBtn.style.display="block";
+});
+
+unmasterBtn.addEventListener("click", async ()=>{
+  const currentCard=activeCards[currentIndex];
+  currentCard.isMastered=false;currentCard.stage=0;currentCard.nextReview=null;
+  await saveFlashcards();
+  masteredActionContainer.style.display="none";nBtn.style.display="block";
+});
+
+nBtn.addEventListener("click",()=>{currentIndex++;showCard();});
+
+addBtn.addEventListener("click", async ()=>{
+  const qText=newQInput.value.trim();
+  const aText=newAInput.value.trim();
+  const tText=newTInput.value.trim()||"一般";
+  const nText=newNoteInput.value.trim();
+  if(!qText||!aText){alert("英語と日本語の両方を入力してくれ！");return;}
+  const newCard={id:Date.now(),question:qText,answer:aText,tag:tText,note:nText,stage:0,nextReview:null,isMastered:false};
+  flashcards.push(newCard);
+  await saveFlashcards();
+  newQInput.value="";newAInput.value="";newTInput.value="";newNoteInput.value="";
+  reloadActiveCards();renderTagButtons();showCard();
+});
+
+// --- エクスポート: Blob + ObjectURL方式に変更、DOMに追加してからclick() ---
+exportBtn.addEventListener("click",()=>{
+  const dataStr=JSON.stringify(flashcards,null,2);
+  const blob=new Blob([dataStr],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download="flashcards_backup.json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+// --- JSONインポート: 保存をwindow.storageに ---
+importFile.addEventListener("change",(e)=>{
+  const file=e.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=async function(event){
+    try{
+      const imported=JSON.parse(event.target.result);
+      if(!Array.isArray(imported)){
+        alert("無効なJSONファイル形式です。カードの配列である必要があります。");
+        return;
+      }
+      const { normalized, skipped } = normalizeCardList(imported, []);
+      if(normalized.length===0){
+        alert("有効なカードが見つかりませんでした。各カードに question と answer が必要です。");
+        return;
+      }
+      flashcards=normalized;
+      const ok = await saveFlashcards();
+      reloadActiveCards();renderTagButtons();showCard();
+      let msg = `${normalized.length}件のカードをインポートしたよ！`;
+      if(skipped>0) msg += `\n(形式が不正なカードが${skipped}件あったのでスキップしたよ)`;
+      if(!ok) msg += "\n※ただし保存には失敗したみたい。";
+      alert(msg);
+    }catch(err){
+      alert("ファイルの読み込みに失敗しました。JSON形式が正しいか確認してね。");
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = "";
+});
+
+importCsvFile.addEventListener("change",(e)=>{
+  const file=e.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=async function(event){
+    try{
+      const rawCards=parseCSV(event.target.result);
+      if(rawCards.length>0){
+        const existingIds = flashcards.map(c=>c.id);
+        const { normalized, skipped } = normalizeCardList(rawCards, existingIds);
+        flashcards=flashcards.concat(normalized);
+        const ok = await saveFlashcards();
+        reloadActiveCards();renderTagButtons();showCard();
+        let msg = `${normalized.length}件のカードをCSVから追加したよ！`;
+        if(skipped>0) msg += `\n(形式が不正なカードが${skipped}件あったのでスキップしたよ)`;
+        if(!ok) msg += "\n※ただし保存には失敗したみたい。";
+        alert(msg);
+      }else{
+        alert("有効なカードデータが見つかりませんでした。ヘッダーに question, answer が含まれているか確認してね。");
+      }
+    }catch(err){
+      alert("CSVファイルの読み込みに失敗しました。");
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = "";
+});
+
+// --- 初期化 ---
+(async function init(){
+  await loadFlashcards();
+  activeCards=getReviewCards();
+  renderTagButtons();
+  showCard();
+})();
+</script>

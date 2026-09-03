@@ -1,34 +1,48 @@
-// js/io.js のエクスポート部分の改修案
-exportBtn.addEventListener('click', async () => {
-    const data = localStorage.getItem('flashcards') || '[]';
-    const blob = new Blob([data], { type: 'application/json' });
-    const file = new File([blob], 'flashcards_backup.json', { type: 'application/json' });
-
-    // iOSのスタンドアロンでも動きやすいWeb Share APIを優先的に試す
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        try {
-            await navigator.share({
-                files: [file],
-                title: 'Flashcard Backup',
-                text: 'フラッシュカードのバックアップデータです'
-            });
-            return;
-        } catch (err) {
-            if (err.name !== 'AbortError') {
-                console.log('Share failed, fallback to download link', err);
-            } else {
-                return; // ユーザーがキャンセルした場合は何もしない
-            }
+// js/io.js
+function parseCSV(text) {
+  const lines = text.split(/\r\n|\n/);
+  const result = [];
+  if (lines.length === 0) return result;
+  const headers = lines[0].split(',').map(h => h.trim().replace(/^["']|["']$/g, ''));
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    const row = [];
+    let inQuotes = false;
+    let currentField = "";
+    for (let j = 0; j < line.length; j++) {
+      const char = line[j];
+      if (char === '"') {
+        if (inQuotes && line[j + 1] === '"') {
+          currentField += '"';
+          j++;
+        } else {
+          inQuotes = !inQuotes;
         }
+      } else if (char === ',' && !inQuotes) {
+        row.push(currentField);
+        currentField = "";
+      } else {
+        currentField += char;
+      }
     }
-
-    // フォールバック：通常ブラウザ向け
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'flashcards_backup.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-});
+    row.push(currentField);
+    const obj = {};
+    headers.forEach((h, idx) => {
+      obj[h] = (row[idx] !== undefined) ? row[idx].trim().replace(/^["']|["']$/g, '') : "";
+    });
+    if (obj.question && obj.answer) {
+      result.push({
+        id: Date.now() + i,
+        question: obj.question,
+        answer: obj.answer,
+        tag: obj.tag || "一般",
+        note: obj.note || "",
+        stage: 0,
+        nextReview: null,
+        isMastered: false
+      });
+    }
+  }
+  return result;
+}

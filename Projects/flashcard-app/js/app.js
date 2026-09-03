@@ -1,158 +1,19 @@
-const STORAGE_KEY = "my_flashcards_data";
-const defaultCards = [
-  { id: 1, question: "Are there any others?", answer: "他に無いよな", tag: "日常会話", note: "相手に確認するときの定番フレーズ", stage: 0, nextReview: null, isMastered: false },
-  { id: 2, question: "That's all, right?", answer: "これで全部だよね（他にないよね）", tag: "日常会話", note: "直訳は「それが全てだね」", stage: 0, nextReview: null, isMastered: false },
-  { id: 3, question: "Any other options?", answer: "他に選択肢はないよな？", tag: "ビジネス", note: "ビジネスの交渉や提案の場面で使える", stage: 0, nextReview: null, isMastered: false },
-  { id: 4, question: "Good morning!", answer: "おはよう！", tag: "朝の会話", note: "基本的な挨拶", stage: 0, nextReview: null, isMastered: false }
-];
-
-let flashcards = StorageManager.load(STORAGE_KEY, defaultCards);
-if (!flashcards || flashcards.length === 0) {
-  flashcards = defaultCards;
-  StorageManager.save(STORAGE_KEY, flashcards);
-}
-
+// js/app.js
 let activeCards = [];
 let currentIndex = 0;
 let currentMode = "review";
 
-const qEl = document.getElementById("card-question"),
-      aEl = document.getElementById("card-answer"),
-      noteEl = document.getElementById("card-note"),
-      tagEl = document.getElementById("card-tag"),
-      counterEl = document.getElementById("card-counter"),
-      tBtn = document.getElementById("toggle-btn"),
-      speakBtn = document.getElementById("speak-btn"),
-      editBtn = document.getElementById("edit-btn"),
-      deleteBtn = document.getElementById("delete-btn"),
-      nBtn = document.getElementById("next-btn"),
-      rBtns = document.getElementById("review-buttons"),
-      masteredActionContainer = document.getElementById("mastered-action-container"),
-      masterBtn = document.getElementById("master-btn"),
-      unmasterBtn = document.getElementById("unmaster-btn"),
-      editFormContainer = document.getElementById("edit-form-container"),
-      editQInput = document.getElementById("edit-q"),
-      editAInput = document.getElementById("edit-a"),
-      editTInput = document.getElementById("edit-t"),
-      editNoteInput = document.getElementById("edit-note"),
-      saveEditBtn = document.getElementById("save-edit-btn"),
-      cancelEditBtn = document.getElementById("cancel-edit-btn"),
-      tagFilterContainer = document.getElementById("tag-filter-container"),
-      reviewModeBtn = document.getElementById("review-mode-btn"),
-      allModeBtn = document.getElementById("all-mode-btn"),
-      shuffleModeBtn = document.getElementById("shuffle-mode-btn"),
-      masteredModeBtn = document.getElementById("mastered-mode-btn"),
-      newQInput = document.getElementById("new-q"),
-      newAInput = document.getElementById("new-a"),
-      newTInput = document.getElementById("new-t"),
-      newNoteInput = document.getElementById("new-note"),
-      addBtn = document.getElementById("add-btn"),
-      exportBtn = document.getElementById("export-btn"),
-      importFile = document.getElementById("import-file");
-
 function reloadActiveCards() {
-  if (currentMode === "review") {
-    activeCards = CardFilter.getReview(flashcards);
-  } else if (currentMode === "all") {
-    activeCards = CardFilter.getValid(flashcards);
-  } else if (currentMode === "shuffle") {
-    activeCards = CardFilter.shuffle(CardFilter.getValid(flashcards));
-  } else if (currentMode === "mastered") {
-    activeCards = CardFilter.getMastered(flashcards);
-  }
+  if (currentMode === "review") { activeCards = getReviewCards(); }
+  else if (currentMode === "all") { activeCards = getValidCards(); }
+  else if (currentMode === "shuffle") { activeCards = shuffleArray(getValidCards()); }
+  else if (currentMode === "mastered") { activeCards = getMasteredCards(); }
 }
 
-function updateTagUI() {
-  UIComponents.renderTagButtons(tagFilterContainer, CardFilter.getValid(flashcards), (selectedTag) => {
-    currentMode = "tag";
-    activeCards = CardFilter.getValid(flashcards).filter(c => (c.tag || "未分類") === selectedTag);
-    currentIndex = 0;
-    showCard();
-  });
-}
-
-function showCard() {
-  editFormContainer.style.display = "none";
-  if (activeCards.length === 0) {
-    qEl.textContent = currentMode === "mastered" ? "習得済みのカードはありません" : "該当するカードはありません！";
-    aEl.textContent = "";
-    noteEl.style.display = "none";
-    tagEl.style.display = "none";
-    counterEl.textContent = "0 / 0";
-    tBtn.style.display = "none";
-    speakBtn.style.display = "none";
-    editBtn.style.display = "none";
-    deleteBtn.style.display = "none";
-    rBtns.style.display = "none";
-    masteredActionContainer.style.display = "none";
-    nBtn.style.display = "none";
-    return;
-  }
-  if (currentIndex >= activeCards.length) {
-    qEl.textContent = "🎉 ここまでです！お疲れ様！";
-    aEl.textContent = "";
-    noteEl.style.display = "none";
-    tagEl.style.display = "none";
-    counterEl.textContent = `${activeCards.length} / ${activeCards.length}`;
-    tBtn.style.display = "none";
-    speakBtn.style.display = "none";
-    editBtn.style.display = "none";
-    deleteBtn.style.display = "none";
-    rBtns.style.display = "none";
-    masteredActionContainer.style.display = "none";
-    nBtn.style.display = "none";
-    return;
-  }
-  tagEl.style.display = "inline-block";
-  const c = activeCards[currentIndex];
-  qEl.textContent = c.question;
-  aEl.textContent = c.answer;
-  if (c.note) {
-    noteEl.textContent = `📝 備考: ${c.note}`;
-    noteEl.style.display = "block";
-  } else {
-    noteEl.style.display = "none";
-  }
-  tagEl.textContent = `🏷️ ${c.tag || "未分類"}`;
-  counterEl.textContent = `${currentIndex + 1} / ${activeCards.length}`;
-  aEl.style.display = "none";
-  tBtn.style.display = "inline-block";
-  tBtn.textContent = "答えを見る";
-  speakBtn.style.display = "inline-block";
-  editBtn.style.display = "inline-block";
-  deleteBtn.style.display = "inline-block";
-  rBtns.style.display = "none";
-  masteredActionContainer.style.display = "none";
-  nBtn.style.display = "none";
-}
-
-reviewModeBtn.addEventListener("click", () => {
-  currentMode = "review";
-  activeCards = CardFilter.getReview(flashcards);
-  currentIndex = 0;
-  showCard();
-});
-
-allModeBtn.addEventListener("click", () => {
-  currentMode = "all";
-  activeCards = CardFilter.getValid(flashcards);
-  currentIndex = 0;
-  showCard();
-});
-
-shuffleModeBtn.addEventListener("click", () => {
-  currentMode = "shuffle";
-  activeCards = CardFilter.shuffle(CardFilter.getValid(flashcards));
-  currentIndex = 0;
-  showCard();
-});
-
-masteredModeBtn.addEventListener("click", () => {
-  currentMode = "mastered";
-  activeCards = CardFilter.getMastered(flashcards);
-  currentIndex = 0;
-  showCard();
-});
+reviewModeBtn.addEventListener("click", () => { currentMode = "review"; activeCards = getReviewCards(); currentIndex = 0; showCard(); });
+allModeBtn.addEventListener("click", () => { currentMode = "all"; activeCards = getValidCards(); currentIndex = 0; showCard(); });
+shuffleModeBtn.addEventListener("click", () => { currentMode = "shuffle"; activeCards = shuffleArray(getValidCards()); currentIndex = 0; showCard(); });
+masteredModeBtn.addEventListener("click", () => { currentMode = "mastered"; activeCards = getMasteredCards(); currentIndex = 0; showCard(); });
 
 tBtn.addEventListener("click", () => {
   if (aEl.style.display === "none") {
@@ -168,7 +29,13 @@ tBtn.addEventListener("click", () => {
 
 speakBtn.addEventListener("click", () => {
   const c = activeCards[currentIndex];
-  UIComponents.speak(c.question);
+  if ('speechSynthesis' in window) {
+    const utterance = new SpeechSynthesisUtterance(c.question);
+    utterance.lang = 'en-US';
+    window.speechSynthesis.speak(utterance);
+  } else {
+    alert("お使いのブラウザは音声読み上げに対応していないみたい。");
+  }
 });
 
 editBtn.addEventListener("click", () => {
@@ -198,9 +65,9 @@ saveEditBtn.addEventListener("click", () => {
   c.answer = aText;
   c.tag = tText;
   c.note = nText;
-  StorageManager.save(STORAGE_KEY, flashcards);
+  saveFlashcards();
   editFormContainer.style.display = "none";
-  updateTagUI();
+  renderTagButtons();
   showCard();
   alert("カードを更新したよ！");
 });
@@ -209,9 +76,9 @@ deleteBtn.addEventListener("click", () => {
   if (confirm("このカードを本当に削除してもいいかい？")) {
     const c = activeCards[currentIndex];
     flashcards = flashcards.filter(item => item.id !== c.id);
-    StorageManager.save(STORAGE_KEY, flashcards);
+    saveFlashcards();
     reloadActiveCards();
-    updateTagUI();
+    renderTagButtons();
     showCard();
   }
 });
@@ -224,7 +91,7 @@ document.querySelectorAll(".rev-btn").forEach(btn => {
     const currentCard = activeCards[currentIndex];
     currentCard.stage += 1;
     currentCard.nextReview = nextDate.toISOString();
-    StorageManager.save(STORAGE_KEY, flashcards);
+    saveFlashcards();
     rBtns.style.display = "none";
     nBtn.style.display = "block";
   });
@@ -233,7 +100,7 @@ document.querySelectorAll(".rev-btn").forEach(btn => {
 masterBtn.addEventListener("click", () => {
   const currentCard = activeCards[currentIndex];
   currentCard.isMastered = true;
-  StorageManager.save(STORAGE_KEY, flashcards);
+  saveFlashcards();
   rBtns.style.display = "none";
   nBtn.style.display = "block";
 });
@@ -243,7 +110,7 @@ unmasterBtn.addEventListener("click", () => {
   currentCard.isMastered = false;
   currentCard.stage = 0;
   currentCard.nextReview = null;
-  StorageManager.save(STORAGE_KEY, flashcards);
+  saveFlashcards();
   masteredActionContainer.style.display = "none";
   nBtn.style.display = "block";
 });
@@ -273,43 +140,75 @@ addBtn.addEventListener("click", () => {
     isMastered: false
   };
   flashcards.push(newCard);
-  StorageManager.save(STORAGE_KEY, flashcards);
+  saveFlashcards();
   newQInput.value = "";
   newAInput.value = "";
   newTInput.value = "";
   newNoteInput.value = "";
   reloadActiveCards();
-  updateTagUI();
+  renderTagButtons();
   alert("新しいカードを追加したよ！");
   showCard();
 });
 
 exportBtn.addEventListener("click", () => {
-  IOManager.exportJSON(flashcards, "flashcards_backup.json");
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(flashcards, null, 2));
+  const dlAnchorElem = document.createElement('a');
+  dlAnchorElem.setAttribute("href", dataStr);
+  dlAnchorElem.setAttribute("download", "flashcards_backup.json");
+  dlAnchorElem.click();
+  dlAnchorElem.remove();
 });
 
 importFile.addEventListener("change", (e) => {
   const file = e.target.files[0];
-  IOManager.importJSON(file, (imported) => {
-    flashcards = imported;
-    StorageManager.save(STORAGE_KEY, flashcards);
-    reloadActiveCards();
-    updateTagUI();
-    showCard();
-    alert("JSONデータを正常にインポートしたよ！");
-  }, (errMsg) => {
-    alert(errMsg);
-  });
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    try {
+      const parsed = JSON.parse(event.target.result);
+      const normalized = normalizeCardList(parsed);
+      if (normalized) {
+        flashcards = normalized;
+        saveFlashcards();
+        reloadActiveCards();
+        renderTagButtons();
+        showCard();
+        alert("JSONデータを正常にインポートしたよ！");
+      } else {
+        alert("有効なカードデータが見つかりませんでした。");
+      }
+    } catch(err) {
+      alert("ファイルの読み込みに失敗しました。");
+    }
+  };
+  reader.readAsText(file);
 });
 
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('Service Worker registered!', reg))
-      .catch(err => console.log('Service Worker failed:', err));
-  });
-}
+importCsvFile.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    try {
+      const newCards = parseCSV(event.target.result);
+      if (newCards.length > 0) {
+        flashcards = flashcards.concat(newCards);
+        saveFlashcards();
+        reloadActiveCards();
+        renderTagButtons();
+        showCard();
+        alert(`${newCards.length}件のカードをCSVから追加したよ！`);
+      } else {
+        alert("有効なカードデータが見つかりませんでした。ヘッダーに question, answer が含まれているか確認してね。");
+      }
+    } catch(err) {
+      alert("CSVファイルの読み込みに失敗しました。");
+    }
+  };
+  reader.readAsText(file);
+});
 
-activeCards = CardFilter.getReview(flashcards);
-updateTagUI();
+activeCards = getReviewCards();
+renderTagButtons();
 showCard();
