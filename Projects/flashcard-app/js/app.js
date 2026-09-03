@@ -151,22 +151,35 @@ addBtn.addEventListener("click", () => {
   showCard();
 });
 
-// js/app.js の exportBtn の部分をこれに差し替えてね
-exportBtn.addEventListener("click", () => {
+
+exportBtn.addEventListener("click", async () => {
   try {
     const dataStr = JSON.stringify(flashcards, null, 2);
     const blob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const dlAnchorElem = document.createElement('a');
-    dlAnchorElem.setAttribute("href", url);
-    dlAnchorElem.setAttribute("download", "flashcards_backup.json");
-    
-    document.body.appendChild(dlAnchorElem);
-    dlAnchorElem.click();
-    document.body.removeChild(dlAnchorElem);
-    URL.revokeObjectURL(url);
+    const file = new File([blob], "flashcards_backup.json", { type: "application/json" });
+
+    // iOSなどのシェア機能（Web Share API）が使える環境ならファイルを共有する
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        files: [file],
+        title: '暗記カードバックアップ',
+        text: 'JSONバックアップデータです'
+      });
+    } else {
+      // PCブラウザなどのフォールバック
+      const url = URL.createObjectURL(blob);
+      const dlAnchorElem = document.createElement('a');
+      dlAnchorElem.setAttribute("href", url);
+      dlAnchorElem.setAttribute("download", "flashcards_backup.json");
+      document.body.appendChild(dlAnchorElem);
+      dlAnchorElem.click();
+      document.body.removeChild(dlAnchorElem);
+      URL.revokeObjectURL(url);
+    }
   } catch (err) {
-    alert("エクスポートエラー: " + err.message);
+    if (err.name !== 'AbortError') {
+      alert("エクスポートエラー: " + err.message);
+    }
   }
 });
 
