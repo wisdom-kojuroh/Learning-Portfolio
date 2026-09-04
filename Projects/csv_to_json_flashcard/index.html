@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>CSV to JSON Converter</title>
+</head>
+<body>
+    <h2>暗記カード CSV変換ツール</h2>
+    <input type="file" id="csvFile" accept=".csv">
+    <button id="convertBtn">変換してダウンロード</button>
+
+    <script>
+        document.getElementById('convertBtn').addEventListener('click', () => {
+            const fileInput = document.getElementById('csvFile');
+            if (fileInput.files.length === 0) {
+                alert("CSVファイルを選択してくれ！");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split(/\r\n|\n/);
+                const result = [];
+                
+                // 1行目をヘッダー（キー名）として取得
+                const headers = lines[0].split(',');
+
+                for (let i = 1; i < lines.length; i++) {
+                    if (!lines[i].trim()) continue; // 空行はスキップ
+                    const currentLine = lines[i].split(',');
+                    const obj = {};
+                    // 一意のIDを自動付与
+                    obj.id = crypto.randomUUID();
+                    
+                    for (let j = 0; j < headers.length; j++) {
+                        obj[headers[j].trim()] = currentLine[j] ? currentLine[j].trim() : "";
+                    }
+                    result.push(obj);
+                }
+
+                // JSONに変換してダウンロード
+                const jsonStr = JSON.stringify(result, null, 2);
+                const blob = new Blob([jsonStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "flashcards_converted.json";
+                a.click();
+                URL.revokeObjectURL(url);
+            };
+
+            reader.readAsText(file);
+        });
+    </script>
+</body>
+</html>
