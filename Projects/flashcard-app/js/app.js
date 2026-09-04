@@ -159,46 +159,46 @@ addBtn?.addEventListener("click", () => {
   showCard();
 });
 
-exportBtn?.addEventListener("click", async () => {
-  const dataStr = JSON.stringify(flashcards, null, 2);
-  const blob = new Blob([dataStr], { type: 'application/json' });
-  const file = new File([blob], "flashcards_backup.json", { type: "application/json" });
+// スマホ用：Web Share APIを使ってファイルを共有するボタン
+const shareBtn = document.getElementById("share-btn");
+shareBtn?.addEventListener("click", async () => {
+  try {
+    const dataStr = JSON.stringify(flashcards, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const file = new File([blob], "flashcards_backup.json", { type: "application/json" });
 
-  let sharedSuccessfully = false;
-
-  // プライマリ1: スマホなどのWeb Share APIを試す
-  if (navigator.canShare && navigator.canShare({ files: [file] })) {
-    try {
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({
         files: [file],
         title: '暗記カードバックアップ',
         text: 'JSONバックアップデータです'
       });
-      sharedSuccessfully = true;
-    } catch (err) {
-      // ユーザーがシェアをキャンセルした場合はエラーにしない
-      if (err.name === 'AbortError') {
-        return;
-      }
-      // その他のパーミッションエラーなどの場合はフォールバックへ進む
-      console.log("Web Share failed, falling back to download link.", err);
+    } else {
+      alert("お使いのブラウザはシェア機能に対応していません。PC用保存ボタンをお試しください。");
+    }
+  } catch (err) {
+    if (err.name !== 'AbortError') {
+      alert("シェアエラー: " + err.message);
     }
   }
+});
 
-  // プライマリ2（フォールバック）: シェアできなかった、または非対応の環境なら従来のダウンロード方式
-  if (!sharedSuccessfully) {
-    try {
-      const url = URL.createObjectURL(blob);
-      const dlAnchorElem = document.createElement('a');
-      dlAnchorElem.setAttribute("href", url);
-      dlAnchorElem.setAttribute("download", "flashcards_backup.json");
-      document.body.appendChild(dlAnchorElem);
-      dlAnchorElem.click();
-      document.body.removeChild(dlAnchorElem);
-      URL.revokeObjectURL(url);
-    } catch (fallbackErr) {
-      alert("エクスポートエラー: " + fallbackErr.message);
-    }
+// PC・通常用：従来の<a>タグを使ったダウンロードボタン
+const downloadBtn = document.getElementById("download-btn");
+downloadBtn?.addEventListener("click", () => {
+  try {
+    const dataStr = JSON.stringify(flashcards, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const dlAnchorElem = document.createElement('a');
+    dlAnchorElem.setAttribute("href", url);
+    dlAnchorElem.setAttribute("download", "flashcards_backup.json");
+    document.body.appendChild(dlAnchorElem);
+    dlAnchorElem.click();
+    document.body.removeChild(dlAnchorElem);
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    alert("ダウンロードエラー: " + err.message);
   }
 });
 
