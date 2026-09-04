@@ -160,18 +160,34 @@ addBtn?.addEventListener("click", () => {
 });
 
 exportBtn?.addEventListener("click", async () => {
-  try {
-    const dataStr = JSON.stringify(flashcards, null, 2);
-    const blob = new Blob([dataStr], { type: 'application/json' });
-    const file = new File([blob], "flashcards_backup.json", { type: "application/json" });
+  const dataStr = JSON.stringify(flashcards, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const file = new File([blob], "flashcards_backup.json", { type: "application/json" });
 
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+  let sharedSuccessfully = false;
+
+  // プライマリ1: スマホなどのWeb Share APIを試す
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
       await navigator.share({
         files: [file],
         title: '暗記カードバックアップ',
         text: 'JSONバックアップデータです'
       });
-    } else {
+      sharedSuccessfully = true;
+    } catch (err) {
+      // ユーザーがシェアをキャンセルした場合はエラーにしない
+      if (err.name === 'AbortError') {
+        return;
+      }
+      // その他のパーミッションエラーなどの場合はフォールバックへ進む
+      console.log("Web Share failed, falling back to download link.", err);
+    }
+  }
+
+  // プライマリ2（フォールバック）: シェアできなかった、または非対応の環境なら従来のダウンロード方式
+  if (!sharedSuccessfully) {
+    try {
       const url = URL.createObjectURL(blob);
       const dlAnchorElem = document.createElement('a');
       dlAnchorElem.setAttribute("href", url);
@@ -180,10 +196,8 @@ exportBtn?.addEventListener("click", async () => {
       dlAnchorElem.click();
       document.body.removeChild(dlAnchorElem);
       URL.revokeObjectURL(url);
-    }
-  } catch (err) {
-    if (err.name !== 'AbortError') {
-      alert("エクスポートエラー: " + err.message);
+    } catch (fallbackErr) {
+      alert("エクスポートエラー: " + fallbackErr.message);
     }
   }
 });
