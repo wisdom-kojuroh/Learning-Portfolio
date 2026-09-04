@@ -1,65 +1,29 @@
+// js/io.js
 
+function exportJSON(flashcards) {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(flashcards, null, 2));
+  const downloadAnchor = document.createElement('a');
+  downloadAnchor.setAttribute("href", dataStr);
+  downloadAnchor.setAttribute("download", "flashcards_backup.json");
+  document.body.appendChild(downloadAnchor);
+  downloadAnchor.click();
+  downloadAnchor.remove();
+}
 
-
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IO Test</title>
-</head>
-<body style="padding: 20px; font-family: sans-serif;">
-    <h2>iOS IO検証</h2>
-    
-    <!-- エクスポートテスト -->
-    <button id="test-export" style="padding: 10px; font-size: 16px;">エクスポートテスト</button>
-    <br><br>
-
-    <!-- インポートテスト -->
-    <input type="file" id="test-import" style="font-size: 16px;">
-    <br><br>
-
-    <!-- 結果表示用 -->
-    <textarea id="log" rows="6" style="width: 100%;" placeholder="ここに結果やデータが表示されます"></textarea>
-
-    <script>
-        const sampleData = JSON.stringify({ message: "Hello iOS!" }, null, 2);
-
-        // 1. エクスポートの検証（URL.createObjectURL と aタグ自動クリック）
-        document.getElementById('test-export').addEventListener('click', () => {
-            try {
-                const blob = new Blob([sampleData], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'test_backup.json';
-                
-                // iOSスタンドアロンで弾かれるかどうかの直球テスト
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                document.getElementById('log').value = "エクスポート処理を実行しました（ダウンロードが始まれば成功）";
-            } catch (err) {
-                document.getElementById('log').value = "エクスポートエラー: " + err.message;
-            }
-        });
-
-        // 2. インポートの検証（ファイル読み込み）
-        document.getElementById('test-import').addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                document.getElementById('log').value = "インポート成功:\n" + e.target.result;
-            };
-            reader.onerror = (err) => {
-                document.getElementById('log').value = "インポートエラー";
-            };
-            reader.readAsText(file);
-        });
-    </script>
-</body>
-</html>
+function importJSON(file, callback) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      const normalized = normalizeCardList(parsed);
+      if (normalized) {
+        callback(null, normalized);
+      } else {
+        callback(new Error("有効なカードデータが見つからないよ。"));
+      }
+    } catch (err) {
+      callback(err);
+    }
+  };
+  reader.readAsText(file);
+}
