@@ -10,25 +10,26 @@ function reloadActiveCards() {
   else if (currentMode === "mastered") { activeCards = getMasteredCards(); }
 }
 
-reviewModeBtn.addEventListener("click", () => { currentMode = "review"; activeCards = getReviewCards(); currentIndex = 0; showCard(); });
-allModeBtn.addEventListener("click", () => { currentMode = "all"; activeCards = getValidCards(); currentIndex = 0; showCard(); });
-shuffleModeBtn.addEventListener("click", () => { currentMode = "shuffle"; activeCards = shuffleArray(getValidCards()); currentIndex = 0; showCard(); });
-masteredModeBtn.addEventListener("click", () => { currentMode = "mastered"; activeCards = getMasteredCards(); currentIndex = 0; showCard(); });
+reviewModeBtn?.addEventListener("click", () => { currentMode = "review"; activeCards = getReviewCards(); currentIndex = 0; showCard(); });
+allModeBtn?.addEventListener("click", () => { currentMode = "all"; activeCards = getValidCards(); currentIndex = 0; showCard(); });
+shuffleModeBtn?.addEventListener("click", () => { currentMode = "shuffle"; activeCards = shuffleArray(getValidCards()); currentIndex = 0; showCard(); });
+masteredModeBtn?.addEventListener("click", () => { currentMode = "mastered"; activeCards = getMasteredCards(); currentIndex = 0; showCard(); });
 
-tBtn.addEventListener("click", () => {
-  if (aEl.style.display === "none") {
+tBtn?.addEventListener("click", () => {
+  if (aEl && aEl.style.display === "none") {
     aEl.style.display = "block";
-    tBtn.style.display = "none";
+    if (tBtn) tBtn.style.display = "none";
     if (currentMode === "mastered") {
-      masteredActionContainer.style.display = "flex";
+      if (masteredActionContainer) masteredActionContainer.style.display = "flex";
     } else {
-      rBtns.style.display = "flex";
+      if (rBtns) rBtns.style.display = "flex";
     }
   }
 });
 
-speakBtn.addEventListener("click", () => {
+speakBtn?.addEventListener("click", () => {
   const c = activeCards[currentIndex];
+  if (!c) return;
   if ('speechSynthesis' in window) {
     const utterance = new SpeechSynthesisUtterance(c.question);
     utterance.lang = 'en-US';
@@ -38,25 +39,27 @@ speakBtn.addEventListener("click", () => {
   }
 });
 
-editBtn.addEventListener("click", () => {
+editBtn?.addEventListener("click", () => {
   const c = activeCards[currentIndex];
-  editQInput.value = c.question;
-  editAInput.value = c.answer;
-  editTInput.value = c.tag || "";
-  editNoteInput.value = c.note || "";
-  editFormContainer.style.display = "block";
+  if (!c) return;
+  if (editQInput) editQInput.value = c.question;
+  if (editAInput) editAInput.value = c.answer;
+  if (editTInput) editTInput.value = c.tag || "";
+  if (editNoteInput) editNoteInput.value = c.note || "";
+  if (editFormContainer) editFormContainer.style.display = "block";
 });
 
-cancelEditBtn.addEventListener("click", () => {
-  editFormContainer.style.display = "none";
+cancelEditBtn?.addEventListener("click", () => {
+  if (editFormContainer) editFormContainer.style.display = "none";
 });
 
-saveEditBtn.addEventListener("click", () => {
+saveEditBtn?.addEventListener("click", () => {
   const c = activeCards[currentIndex];
-  const qText = editQInput.value.trim();
-  const aText = editAInput.value.trim();
-  const tText = editTInput.value.trim() || "一般";
-  const nText = editNoteInput.value.trim();
+  if (!c) return;
+  const qText = editQInput ? editQInput.value.trim() : "";
+  const aText = editAInput ? editAInput.value.trim() : "";
+  const tText = editTInput ? (editTInput.value.trim() || "一般") : "一般";
+  const nText = editNoteInput ? editNoteInput.value.trim() : "";
   if (!qText || !aText) {
     alert("英語と日本語の両方を入力してくれ！");
     return;
@@ -66,15 +69,16 @@ saveEditBtn.addEventListener("click", () => {
   c.tag = tText;
   c.note = nText;
   saveFlashcards();
-  editFormContainer.style.display = "none";
+  if (editFormContainer) editFormContainer.style.display = "none";
   renderTagButtons();
   showCard();
   alert("カードを更新したよ！");
 });
 
-deleteBtn.addEventListener("click", () => {
+deleteBtn?.addEventListener("click", () => {
   if (confirm("このカードを本当に削除してもいいかい？")) {
     const c = activeCards[currentIndex];
+    if (!c) return;
     flashcards = flashcards.filter(item => item.id !== c.id);
     saveFlashcards();
     reloadActiveCards();
@@ -89,48 +93,52 @@ document.querySelectorAll(".rev-btn").forEach(btn => {
     const nextDate = new Date();
     nextDate.setDate(nextDate.getDate() + days);
     const currentCard = activeCards[currentIndex];
+    if (!currentCard) return;
     currentCard.stage += 1;
     currentCard.nextReview = nextDate.toISOString();
     saveFlashcards();
-    rBtns.style.display = "none";
-    nBtn.style.display = "block";
+    if (rBtns) rBtns.style.display = "none";
+    if (nBtn) nBtn.style.display = "block";
   });
 });
 
-masterBtn.addEventListener("click", () => {
+masterBtn?.addEventListener("click", () => {
   const currentCard = activeCards[currentIndex];
+  if (!currentCard) return;
   currentCard.isMastered = true;
   saveFlashcards();
-  rBtns.style.display = "none";
-  nBtn.style.display = "block";
+  if (rBtns) rBtns.style.display = "none";
+  if (nBtn) nBtn.style.display = "block";
 });
 
-unmasterBtn.addEventListener("click", () => {
+unmasterBtn?.addEventListener("click", () => {
   const currentCard = activeCards[currentIndex];
+  if (!currentCard) return;
   currentCard.isMastered = false;
   currentCard.stage = 0;
   currentCard.nextReview = null;
   saveFlashcards();
-  masteredActionContainer.style.display = "none";
-  nBtn.style.display = "block";
+  if (masteredActionContainer) masteredActionContainer.style.display = "none";
+  if (nBtn) nBtn.style.display = "block";
 });
 
-nBtn.addEventListener("click", () => {
+nBtn?.addEventListener("click", () => {
   currentIndex++;
   showCard();
 });
 
-addBtn.addEventListener("click", () => {
-  const qText = newQInput.value.trim();
-  const aText = newAInput.value.trim();
-  const tText = newTInput.value.trim() || "一般";
-  const nText = newNoteInput.value.trim();
+addBtn?.addEventListener("click", () => {
+  const qText = newQInput ? newQInput.value.trim() : "";
+  const aText = newAInput ? newAInput.value.trim() : "";
+  const tText = newTInput ? (newTInput.value.trim() || "一般") : "一般";
+  const nText = newNoteInput ? newNoteInput.value.trim() : "";
   if (!qText || !aText) {
     alert("英語と日本語の両方を入力してくれ！");
     return;
   }
+  const cardId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
   const newCard = {
-    id: Date.now(),
+    id: cardId,
     question: qText,
     answer: aText,
     tag: tText,
@@ -141,24 +149,22 @@ addBtn.addEventListener("click", () => {
   };
   flashcards.push(newCard);
   saveFlashcards();
-  newQInput.value = "";
-  newAInput.value = "";
-  newTInput.value = "";
-  newNoteInput.value = "";
+  if (newQInput) newQInput.value = "";
+  if (newAInput) newAInput.value = "";
+  if (newTInput) newTInput.value = "";
+  if (newNoteInput) newNoteInput.value = "";
   reloadActiveCards();
   renderTagButtons();
   alert("新しいカードを追加したよ！");
   showCard();
 });
 
-
-exportBtn.addEventListener("click", async () => {
+exportBtn?.addEventListener("click", async () => {
   try {
     const dataStr = JSON.stringify(flashcards, null, 2);
     const blob = new Blob([dataStr], { type: 'application/json' });
     const file = new File([blob], "flashcards_backup.json", { type: "application/json" });
 
-    // iOSなどのシェア機能（Web Share API）が使える環境ならファイルを共有する
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({
         files: [file],
@@ -166,7 +172,6 @@ exportBtn.addEventListener("click", async () => {
         text: 'JSONバックアップデータです'
       });
     } else {
-      // PCブラウザなどのフォールバック
       const url = URL.createObjectURL(blob);
       const dlAnchorElem = document.createElement('a');
       dlAnchorElem.setAttribute("href", url);
@@ -183,7 +188,7 @@ exportBtn.addEventListener("click", async () => {
   }
 });
 
-importFile.addEventListener("change", (e) => {
+importFile?.addEventListener("change", (e) => {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
@@ -208,30 +213,6 @@ importFile.addEventListener("change", (e) => {
   reader.readAsText(file);
 });
 
-importCsvFile.addEventListener("change", (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(event) {
-    try {
-      const newCards = parseCSV(event.target.result);
-      if (newCards.length > 0) {
-        flashcards = flashcards.concat(newCards);
-        saveFlashcards();
-        reloadActiveCards();
-        renderTagButtons();
-        showCard();
-        alert(`${newCards.length}件のカードをCSVから追加したよ！`);
-      } else {
-        alert("有効なカードデータが見つかりませんでした。ヘッダーに question, answer が含まれているか確認してね。");
-      }
-    } catch(err) {
-      alert("CSVファイルの読み込みに失敗しました。");
-    }
-  };
-  reader.readAsText(file);
-});
-
-activeCards = getReviewCards();
+reloadActiveCards();
 renderTagButtons();
 showCard();
