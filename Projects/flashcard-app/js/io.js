@@ -31,9 +31,13 @@ function parseCSV(text) {
     headers.forEach((h, idx) => {
       obj[h] = (row[idx] !== undefined) ? row[idx].trim().replace(/^["']|["']$/g, '') : "";
     });
+
+
     if (obj.question && obj.answer) {
+      // 数値ではなく、storage.jsと形式を合わせた一意な文字列IDを生成する
+      const cardId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'csv_' + Date.now() + '_' + i + '_' + Math.random().toString(36).substr(2, 9);
       result.push({
-        id: Date.now() + i,
+        id: cardId,
         question: obj.question,
         answer: obj.answer,
         tag: obj.tag || "一般",
